@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatis.example.BlogMapper">
+  
+  <resultMap type="Reader" id="ReaderMap">
+  		<id property="id" column="id"/>
+  		<result property="money" column="money"/>
+  		<association property="user" javaType="User" column="userID">
+	 		<id property="id" column="user.id"/>
+  			<result property="userName" column="userName"/>
+  		</association>
+  </resultMap>
+<!--   动态sql -->
+ 	<select id="selectReadersByDy" parameterType="Reader" resultType="Reader">
+ 		select * from reader   where 1 = 1
+ 		<if test="money!=0">
+ 			and money > #{money}
+ 		</if>
+ 	</select>
+ 	
+ 	<select id="selectReadersByDy2" parameterType="Reader" resultMap="ReaderMap">
+ 		select * from reader inner join user on reader.userID = user.id  where 1 = 1
+ 		<if test="money!=0">
+ 			and money > #{money}
+ 		</if>
+ 	</select>
+</mapper>

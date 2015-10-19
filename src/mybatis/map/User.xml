@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatis.example.BlogMapper">
+<resultMap type="User" id="userMap">
+	<id property="id" column="id"/>
+	<result property="userName" column="userName"/>
+	<result property="password" column="password"/>
+</resultMap>
+
+<resultMap type="User" id="userMapCollection">
+	<id property="id" column="id"/>
+	<result property="userName" column="userName"/>
+	<result property="password" column="password"/>
+	<collection property="visits" javaType="ArrayList" column="visitID" ofType="mybatis.pojo.Visit">
+		<result property="visitID" column="visitID" />
+		<result property="visitIP" column="visitIP" />
+		<result property="visitDate" column="visitDate" />
+	</collection>
+</resultMap>
+
+  <select id="findUserByID" resultType="mybatis.pojo.User" parameterType="int" >
+    select * from user where id = #{id}
+  </select>
+  
+   <select id="findUserByID2" resultType="mybatis.pojo.User" parameterType="hashmap" >
+    select * from user where id = #{id}
+  </select>
+  
+  <select id="getAllUsers" resultType="mybatis.pojo.User"  >
+    select * from user 
+  </select>
+  
+   <select id="getAllUsers2" resultMap="userMap" >
+    select * from user 
+  </select>
+  
+   <select id="getVisitsLists" resultMap="userMapCollection" >
+    select * from user inner join visit on user.id=visit.userID
+  </select>
+  
+  <insert id = "insertUser" parameterType="User" statementType="PREPARED" keyProperty="id" useGeneratedKeys="true">
+  	insert into user (userName,password) values(#{userName},#{password})
+  </insert>
+  
+  <update id="updateUser" parameterType="User">
+  	update user set userName = #{userName} , password = #{password} where id = #{id}
+  </update>
+	<!--   动态sql -->
+	<select id="selectUserByDy" parameterType="User" resultType="User" >
+		select * from user where 1 = 1 
+		<choose>
+			<when test="userName != null">
+				and userName = #{userName}
+			</when>
+			<when test="password != null">
+				and password = #{password}
+			</when>
+		</choose>
+	</select>
+	
+	
+	<select id="selectUserByDy2" parameterType="User" resultType="User" >
+		select * from user 
+		<where>
+			<if test="userName != null"> and userName = #{userName}</if>
+			<if test="password != null"> and password = #{password}</if>
+		</where>
+	</select>
+	
+	<select id="selectUserByDy3" parameterType="User" >
+		update user 
+		<set>
+			<if test="userName != null">  userName = #{userName},</if>
+			<if test="password != null">  password = #{password},</if>
+		</set>
+		where id = #{id}
+	</select>
+	
+	
+	<update id="selectUserByDy4" parameterType="User" >
+		update user 
+		<trim prefix="set" suffix="where id = #{id}" suffixOverrides="," >
+			<if test="userName !=null ">userName = #{userName} ,</if>
+			<if test="password !=null ">password = #{password} ,</if>
+		</trim>
+	</update>
+	
+	
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatis.example.BlogMapper">
+	<resultMap type="Author" id="authorMap">
+		<id property="id" column="author.id"/>
+		<result property="IDCard" column="IDCard"/>
+		<result property="realName" column="realName"/>
+		<association property="user" column="userID" javaType="User">
+			<id property="id" column="id"/>
+			<result property="userName" column="userName"/>
+			<result property="password" column="password"/>
+		</association>
+	</resultMap>
+	<resultMap type="Author" id="authorMapbyCon">
+		<id property="id" column="id"/>
+		<result property="IDCard" column="IDCard"/>
+		<result property="realName" column="realName"/>
+		<association property="user" column="userID" javaType="User">
+			<constructor>
+				<arg column="userName" javaType="String"/>
+				<arg column="password" javaType="String"/>
+			</constructor>
+		</association>
+	</resultMap>
+	<resultMap type="Author" id="authorMapbySub">
+		<id property="id" column="id"/>
+		<result property="IDCard" column="IDCard"/>
+		<result property="realName" column="realName"/>
+		<association property="user" column="userID" javaType="User" select="findUserByID">
+		</association>
+	</resultMap>
+  <insert id = "insertAuthor" parameterType="Author" statementType="PREPARED" keyProperty="id" useGeneratedKeys="true">
+  	insert into author (realName,userID,IDcard) values(#{realName},#{user.id},#{IDcard})
+  </insert>
+  <select id="selectAuthorJoin" resultMap="authorMap" >
+  	select * from author inner join user  on user.id = author.userID 
+  </select>
+   <select id="selectAuthorJoin2" resultMap="authorMapbyCon" >
+  	select * from author inner join user  on user.id = author.userID 
+  </select>
+   <select id="selectAuthorJoin3" resultMap="authorMapbySub" >
+  	select * from author inner join user  on user.id = author.userID 
+  </select>
+</mapper>
